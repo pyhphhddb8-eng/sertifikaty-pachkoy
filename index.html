@@ -226,9 +226,66 @@
           return { imena, povtory };
         }
 
+        /* ---------- Бумага ---------- */
+
+        function mmVPx(mm, dpi) {
+          return Math.round((mm / 25.4) * dpi);
+        }
+        function ptVPx(pt, dpi) {
+          return (pt / 72) * dpi;
+        }
+
+        /* ---------- Кегль и перенос имени ---------- */
+
+        // Где имя можно перенести: на пробеле или после дефиса двойной фамилии.
+        function variantyRazryva(tekst) {
+          const varianty = [];
+          for (let i = 1; i < tekst.length - 1; i++) {
+            if (tekst[i] === " ") {
+              varianty.push([tekst.slice(0, i), tekst.slice(i + 1)]);
+            } else if (
+              tekst[i] === "-" &&
+              /\p{L}/u.test(tekst[i - 1]) &&
+              /\p{L}/u.test(tekst[i + 1])
+            ) {
+              varianty.push([tekst.slice(0, i + 1), tekst.slice(i + 1)]);
+            }
+          }
+          return varianty;
+        }
+
+        // Кегль идёт вниз от наибольшего. Пока он крупный, имя стоит в одну строку;
+        // в две строки его пускаем, только когда кегль опустился до порога, — иначе
+        // длинное имя вышло бы крупнее короткого. За рамку имя не выходит никогда:
+        // ниже minPx кегль продолжает уменьшаться, но результат помечается «мелко».
+        // Разрыв выбирается целиком по всей строке, слова не переставляются.
+        function podobratKegl(tekst, ramka, izmerit) {
+          const { shirina, maxPx, minPx, porogDvuhStrok } = ramka;
+          const razryvy = variantyRazryva(tekst);
+          const shag = Math.max(1, Math.round(maxPx / 100));
+          for (let px = maxPx; px >= 1; px -= shag) {
+            if (izmerit(tekst, px) <= shirina)
+              return { px, stroki: [tekst], melko: px < minPx };
+            if (px > maxPx * porogDvuhStrok) continue;
+            let luchshij = null;
+            for (const [a, b] of razryvy) {
+              const w = Math.max(izmerit(a, px), izmerit(b, px));
+              if (w <= shirina && (!luchshij || w < luchshij.w))
+                luchshij = { w, stroki: [a, b] };
+            }
+            if (luchshij)
+              return { px, stroki: luchshij.stroki, melko: px < minPx };
+          }
+          return { px: 1, stroki: [tekst], melko: true };
+        }
+
         g.Yadro = {
           PREDEL,
           razobratSpisok,
+          mmVPx,
+          ptVPx,
+          variantyRazryva,
+          podobratKegl,
         };
       })(typeof window !== "undefined" ? window : globalThis);
     </script>
