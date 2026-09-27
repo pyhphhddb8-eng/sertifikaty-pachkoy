@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Сертификаты пачкой — школа «Обжиг»</title>
+    <style>
+      /* ШРИФТЫ: начало */
+      /* ШРИФТЫ: конец */
+    </style>
+    <style id="oformlenie"></style>
+  </head>
+  <body>
+    <main class="stranica">
+      <p class="uslovno">Пример: школа вымышленная, имена и номера условные.</p>
+    </main>
+    <div class="listy" id="listy" aria-hidden="true"></div>
+    <script id="obshchee">
+      (function (g) {
+        "use strict";
+        // Алфавит номера: цифры и заглавная латиница без I и O — их путают с 1 и 0.
+        const ALFAVIT = "0123456789ABCDEFGHJKLMNPQRSTUVWXYZ";
+        const N = ALFAVIT.length;
+        const ZNAK = "[0-9A-HJ-NP-Z]";
+        const FORMAT = new RegExp("^\\d{2}" + ZNAK + "{2}\\d{3}" + ZNAK + "$");
+        const KOD_KURSA = new RegExp("^" + ZNAK + "{2}$");
+
+        // Проверочный знак по схеме Луна для алфавита из N знаков: ловит любую
+        // замену одного знака. Это защита от опечатки и от перебора соседних
+        // номеров, а не от подделки.
+        function kontrolnyjZnak(telo) {
+          let summa = 0;
+          let mnozhitel = 2;
+          for (let i = telo.length - 1; i >= 0; i--) {
+            const kod = ALFAVIT.indexOf(telo[i]);
+            if (kod < 0)
+              throw new Error("Недопустимый знак в номере: " + telo[i]);
+            const x = kod * mnozhitel;
+            summa += Math.floor(x / N) + (x % N);
+            mnozhitel = mnozhitel === 2 ? 1 : 2;
+          }
+          return ALFAVIT[(N - (summa % N)) % N];
+        }
+
+        // Номер из восьми знаков: год (2), код курса (2), порядковый (3), проверочный (1).
+        function sobrat(god, kodKursa, poryadkovyj) {
+          if (!Number.isInteger(god) || god < 2000 || god > 2099) {
+            throw new Error("Год выдачи вне 2000–2099: " + god);
+          }
+          if (!KOD_KURSA.test(kodKursa)) {
+            throw new Error(
+              "Код курса — два знака из алфавита номера: " + kodKursa,
+            );
+          }
+          if (
+            !Number.isInteger(poryadkovyj) ||
+            poryadkovyj < 1 ||
+            poryadkovyj > 999
+          ) {
+            throw new Error("Порядковый номер вне 1–999: " + poryadkovyj);
+          }
+          const telo =
+            String(god - 2000).padStart(2, "0") +
+            kodKursa +
+            String(poryadkovyj).padStart(3, "0");
+          return telo + kontrolnyjZnak(telo);
+        }
+
+        // Номер набирают руками: прощаем регистр, пробелы, дефисы и буквы-двойники.
+        const DVOJNIKI = {
+          O: "0",
+          I: "1",
+          А: "A",
+          В: "B",
+          Е: "E",
+          К: "K",
+          М: "M",
+          Н: "H",
+          О: "0",
+          Р: "P",
+          С: "C",
+          Т: "T",
+          Х: "X",
+          У: "Y",
+        };
+        function normalizovat(vvod) {
+          return String(vvod)
+            .toUpperCase()
+            .replace(/[\s\-‐–—_.№#]/g, "")
+            .replace(/./g, (c) => DVOJNIKI[c] || c);
+        }
+
+        function razobrat(vvod) {
+          const nomer = normalizovat(vvod);
+          if (!FORMAT.test(nomer))
+            return { ok: false, prichina: "format", nomer };
+          if (kontrolnyjZnak(nomer.slice(0, 7)) !== nomer[7])
+            return { ok: false, prichina: "kontrol", nomer };
+          return {
+            ok: true,
+            nomer,
+            god: 2000 + Number(nomer.slice(0, 2)),
+            kodKursa: nomer.slice(2, 4),
+            poryadkovyj: Number(nomer.slice(4, 7)),
+          };
+        }
+
+        function krasivo(nomer) {
+          return (
+            nomer.slice(0, 2) +
+            "-" +
+            nomer.slice(2, 4) +
+            "-" +
+            nomer.slice(4, 7) +
+            "-" +
+            nomer[7]
+          );
+        }
+
+        const MESYACY = [
+          "января",
+          "февраля",
+          "марта",
+          "апреля",
+          "мая",
+          "июня",
+          "июля",
+          "августа",
+          "сентября",
+          "октября",
+          "ноября",
+          "декабря",
+        ];
+        function formatDaty(iso) {
+          const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
+          if (!m || Number(m[2]) < 1 || Number(m[2]) > 12)
+            throw new Error("Дата не в виде ГГГГ-ММ-ДД: " + iso);
+          return (
+            Number(m[3]) + " " + MESYACY[Number(m[2]) - 1] + " " + m[1] + " г."
+          );
+        }
+
+        // Ответ страницы проверки. Имени в ответе нет — его нет и в реестре.
+        function najti(reestr, vvod) {
+          const r = razobrat(vvod);
+          if (!r.ok) return { sostoyanie: "oshibka", nomer: r.nomer };
+          const zapis = reestr.vydano.find((z) => z.nomer === r.nomer);
+          if (!zapis) return { sostoyanie: "net", nomer: r.nomer };
+          return {
+            sostoyanie: "vydan",
+            nomer: r.nomer,
+            kurs: reestr.kursy[zapis.kurs] || zapis.kurs,
+            data: zapis.data,
+          };
+        }
+
+        g.Obshchee = {
+          ALFAVIT,
+          kontrolnyjZnak,
+          sobrat,
+          normalizovat,
+          razobrat,
+          krasivo,
+          formatDaty,
+          najti,
+        };
+      })(typeof window !== "undefined" ? window : globalThis);
+    </script>
+  </body>
+</html>
