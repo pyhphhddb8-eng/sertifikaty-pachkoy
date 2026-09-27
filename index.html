@@ -279,6 +279,448 @@
           return { px: 1, stroki: [tekst], melko: true };
         }
 
+        function razmerLista(shablon) {
+          return {
+            shirina: mmVPx(shablon.list.shirinaMm, shablon.list.dpi),
+            vysota: mmVPx(shablon.list.vysotaMm, shablon.list.dpi),
+          };
+        }
+
+        /* ---------- Шаблон ---------- */
+
+        // Шаблон — данные: координаты в миллиметрах от левого верхнего угла листа,
+        // y у текста — базовая линия. Поменять школу или поле можно здесь,
+        // не трогая рисование.
+        const SHABLON = {
+          list: { shirinaMm: 297, vysotaMm: 210, dpi: 300 },
+          // Принтер не печатает у самого края листа: ничего не ставим ближе 10 мм.
+          bezopasnoePoleMm: 10,
+          cveta: {
+            fon: "#fbf7f1",
+            glavnyj: "#8a4b2a",
+            tekst: "#2b211c",
+            tihij: "#76675d",
+          },
+          shrifty: { zagolovok: "Cormorant Garamond", tekst: "PT Sans" },
+          shkola: {
+            nazvanie: "Школа керамики «Обжиг»",
+            rukovoditel: "А. В. Гончарова",
+          },
+          kursy: [
+            { kod: "GK", nazvanie: "Гончарный круг: основы" },
+            { kod: "RL", nazvanie: "Ручная лепка" },
+            { kod: "GL", nazvanie: "Глазури и обжиг" },
+          ],
+          adresProverki: "pyhphhddb8-eng.github.io/sertifikaty-pachkoy/p",
+          elementy: [
+            { tip: "zalivka", cvet: "fon" },
+            { tip: "ramka", otstupMm: 12, tolshinaMm: 0.9, cvet: "glavnyj" },
+            { tip: "ramka", otstupMm: 15, tolshinaMm: 0.3, cvet: "glavnyj" },
+            {
+              tip: "tekst",
+              tekst: "{shkola}",
+              propisnye: true,
+              xMm: 148.5,
+              yMm: 36,
+              kegelPt: 13,
+              shrift: "tekst",
+              ves: 700,
+              cvet: "glavnyj",
+            },
+            {
+              tip: "tekst",
+              tekst: "Сертификат",
+              propisnye: true,
+              xMm: 148.5,
+              yMm: 64,
+              kegelPt: 54,
+              shrift: "zagolovok",
+              ves: 600,
+              cvet: "tekst",
+            },
+            {
+              tip: "tekst",
+              tekst: "об окончании курса",
+              xMm: 148.5,
+              yMm: 80,
+              kegelPt: 15,
+              shrift: "tekst",
+              ves: 400,
+              cvet: "tihij",
+            },
+            {
+              tip: "tekst",
+              tekst: "«{kurs}»",
+              xMm: 148.5,
+              yMm: 95,
+              kegelPt: 24,
+              shirinaMm: 230,
+              shrift: "zagolovok",
+              ves: 600,
+              cvet: "glavnyj",
+            },
+            {
+              tip: "tekst",
+              tekst: "выдан",
+              xMm: 148.5,
+              yMm: 110,
+              kegelPt: 14,
+              shrift: "tekst",
+              ves: 400,
+              cvet: "tihij",
+            },
+            {
+              tip: "imya",
+              xMm: 148.5,
+              centrMm: 134,
+              shirinaMm: 235,
+              maxPt: 44,
+              minPt: 24,
+              porogDvuhStrok: 0.8,
+              mezhdustrochie: 1.1,
+              shrift: "zagolovok",
+              ves: 600,
+              cvet: "tekst",
+            },
+            {
+              tip: "liniya",
+              x1Mm: 118.5,
+              x2Mm: 178.5,
+              yMm: 154,
+              tolshinaMm: 0.3,
+              cvet: "glavnyj",
+            },
+            {
+              tip: "tekst",
+              tekst: "{data}",
+              xMm: 62,
+              yMm: 171,
+              kegelPt: 13,
+              shrift: "tekst",
+              ves: 700,
+              cvet: "tekst",
+            },
+            {
+              tip: "liniya",
+              x1Mm: 34,
+              x2Mm: 90,
+              yMm: 174,
+              tolshinaMm: 0.25,
+              cvet: "tihij",
+            },
+            {
+              tip: "tekst",
+              tekst: "дата выдачи",
+              xMm: 62,
+              yMm: 179,
+              kegelPt: 9.5,
+              shrift: "tekst",
+              ves: 400,
+              cvet: "tihij",
+            },
+            {
+              tip: "krug",
+              xMm: 148.5,
+              yMm: 172,
+              rMm: 13,
+              tolshinaMm: 0.25,
+              punktir: true,
+              cvet: "tihij",
+            },
+            {
+              tip: "tekst",
+              tekst: "М. П.",
+              xMm: 148.5,
+              yMm: 174,
+              kegelPt: 10,
+              shrift: "tekst",
+              ves: 400,
+              cvet: "tihij",
+            },
+            {
+              tip: "tekst",
+              tekst: "{rukovoditel}",
+              xMm: 235,
+              yMm: 171,
+              kegelPt: 13,
+              shrift: "tekst",
+              ves: 700,
+              cvet: "tekst",
+            },
+            {
+              tip: "liniya",
+              x1Mm: 207,
+              x2Mm: 263,
+              yMm: 174,
+              tolshinaMm: 0.25,
+              cvet: "tihij",
+            },
+            {
+              tip: "tekst",
+              tekst: "руководитель школы",
+              xMm: 235,
+              yMm: 179,
+              kegelPt: 9.5,
+              shrift: "tekst",
+              ves: 400,
+              cvet: "tihij",
+            },
+            {
+              tip: "tekst",
+              tekst: "№ {nomer} · проверка: {adres}",
+              xMm: 148.5,
+              yMm: 192,
+              kegelPt: 10,
+              shrift: "tekst",
+              ves: 400,
+              cvet: "tihij",
+            },
+          ],
+        };
+
+        /* ---------- Раскладка: шаблон + данные → список действий рисования ---------- */
+
+        // izmerit(tekst, px, semejstvo, ves) → ширина текста в пикселях.
+        // dannye: { imya, kurs (название), data ('ГГГГ-ММ-ДД'), nomer (8 знаков) }.
+        function raskladka(shablon, dannye, izmerit) {
+          const dpi = shablon.list.dpi;
+          const mm = (v) => (v / 25.4) * dpi;
+          const { shirina, vysota } = razmerLista(shablon);
+          const znacheniya = {
+            shkola: shablon.shkola.nazvanie,
+            rukovoditel: shablon.shkola.rukovoditel,
+            adres: shablon.adresProverki,
+            kurs: dannye.kurs,
+            data: O.formatDaty(dannye.data),
+            nomer: O.krasivo(dannye.nomer),
+          };
+          const podstavit = (s) =>
+            s.replace(/\{(\w+)\}/g, (_, k) => {
+              if (!(k in znacheniya))
+                throw new Error("В шаблоне неизвестное поле {" + k + "}");
+              return znacheniya[k];
+            });
+          const cvet = (e) => shablon.cveta[e.cvet];
+          const shriftOp = (e) => ({
+            shrift: shablon.shrifty[e.shrift],
+            ves: e.ves,
+            cvet: cvet(e),
+          });
+          const izmeritDlya = (e) => (t, px) =>
+            izmerit(t, px, shablon.shrifty[e.shrift], e.ves);
+
+          const ops = [];
+          let imya = null;
+          for (const e of shablon.elementy) {
+            switch (e.tip) {
+              case "zalivka":
+                ops.push({
+                  tip: "zalivka",
+                  x: 0,
+                  y: 0,
+                  w: shirina,
+                  h: vysota,
+                  cvet: cvet(e),
+                });
+                break;
+              case "ramka": {
+                const o = mm(e.otstupMm);
+                ops.push({
+                  tip: "ramka",
+                  x: o,
+                  y: o,
+                  w: shirina - 2 * o,
+                  h: vysota - 2 * o,
+                  tolshina: mm(e.tolshinaMm),
+                  cvet: cvet(e),
+                });
+                break;
+              }
+              case "liniya":
+                ops.push({
+                  tip: "liniya",
+                  x1: mm(e.x1Mm),
+                  y1: mm(e.yMm),
+                  x2: mm(e.x2Mm),
+                  y2: mm(e.yMm),
+                  tolshina: mm(e.tolshinaMm),
+                  cvet: cvet(e),
+                });
+                break;
+              case "krug":
+                ops.push({
+                  tip: "krug",
+                  x: mm(e.xMm),
+                  y: mm(e.yMm),
+                  r: mm(e.rMm),
+                  tolshina: mm(e.tolshinaMm),
+                  punktir: !!e.punktir,
+                  cvet: cvet(e),
+                });
+                break;
+              case "tekst": {
+                let tekst = podstavit(e.tekst);
+                if (e.propisnye) tekst = tekst.toUpperCase();
+                let px = ptVPx(e.kegelPt, dpi);
+                if (e.shirinaMm) {
+                  px = podobratKegl(
+                    tekst,
+                    {
+                      shirina: mm(e.shirinaMm),
+                      maxPx: px,
+                      minPx: px * 0.6,
+                      porogDvuhStrok: 0,
+                    },
+                    izmeritDlya(e),
+                  ).px;
+                }
+                ops.push({
+                  tip: "tekst",
+                  tekst,
+                  x: mm(e.xMm),
+                  y: mm(e.yMm),
+                  px,
+                  ...shriftOp(e),
+                });
+                break;
+              }
+              case "imya": {
+                imya = podobratKegl(
+                  dannye.imya,
+                  {
+                    shirina: mm(e.shirinaMm),
+                    maxPx: ptVPx(e.maxPt, dpi),
+                    minPx: ptVPx(e.minPt, dpi),
+                    porogDvuhStrok: e.porogDvuhStrok,
+                  },
+                  izmeritDlya(e),
+                );
+                const shagStroki = imya.px * e.mezhdustrochie;
+                // 0,35 кегля — поправка от середины строчных букв к базовой линии.
+                const bazovaya = mm(e.centrMm) + imya.px * 0.35;
+                imya.stroki.forEach((s, i) => {
+                  const y =
+                    bazovaya + (i - (imya.stroki.length - 1) / 2) * shagStroki;
+                  ops.push({
+                    tip: "tekst",
+                    tekst: s,
+                    x: mm(e.xMm),
+                    y,
+                    px: imya.px,
+                    ...shriftOp(e),
+                  });
+                });
+                break;
+              }
+              default:
+                throw new Error("Неизвестный элемент шаблона: " + e.tip);
+            }
+          }
+          return { shirina, vysota, ops, imya };
+        }
+
+        // Что вылезло за безопасное поле. Пустой список — лист печатается целиком.
+        function zaPolem(raskl, shablon, izmerit) {
+          const pole = (shablon.bezopasnoePoleMm / 25.4) * shablon.list.dpi;
+          const vylezli = [];
+          for (const op of raskl.ops) {
+            let k;
+            if (op.tip === "zalivka") continue;
+            if (op.tip === "ramka") {
+              const t = op.tolshina / 2;
+              k = {
+                l: op.x - t,
+                r: op.x + op.w + t,
+                v: op.y - t,
+                n: op.y + op.h + t,
+              };
+            } else if (op.tip === "liniya") {
+              const t = op.tolshina / 2;
+              k = {
+                l: Math.min(op.x1, op.x2),
+                r: Math.max(op.x1, op.x2),
+                v: Math.min(op.y1, op.y2) - t,
+                n: Math.max(op.y1, op.y2) + t,
+              };
+            } else if (op.tip === "krug") {
+              const r = op.r + op.tolshina / 2;
+              k = { l: op.x - r, r: op.x + r, v: op.y - r, n: op.y + r };
+            } else {
+              const w = izmerit(op.tekst, op.px, op.shrift, op.ves);
+              k = {
+                l: op.x - w / 2,
+                r: op.x + w / 2,
+                v: op.y - op.px * 0.8,
+                n: op.y + op.px * 0.25,
+              };
+            }
+            if (
+              k.l < pole ||
+              k.v < pole ||
+              k.r > raskl.shirina - pole ||
+              k.n > raskl.vysota - pole
+            ) {
+              vylezli.push(
+                op.tip === "tekst" ? "текст «" + op.tekst + "»" : op.tip,
+              );
+            }
+          }
+          return vylezli;
+        }
+
+        /* ---------- Рисование на canvas (только в браузере) ---------- */
+
+        function shriftCanvas(px, semejstvo, ves) {
+          return ves + " " + px + 'px "' + semejstvo + '"';
+        }
+
+        function izmeritCanvas(ctx) {
+          return (tekst, px, semejstvo, ves) => {
+            ctx.font = shriftCanvas(px, semejstvo, ves);
+            return ctx.measureText(tekst).width;
+          };
+        }
+
+        function narisovat(ctx, raskl) {
+          ctx.save();
+          for (const op of raskl.ops) {
+            if (op.tip === "zalivka") {
+              ctx.fillStyle = op.cvet;
+              ctx.fillRect(op.x, op.y, op.w, op.h);
+            } else if (op.tip === "ramka") {
+              ctx.strokeStyle = op.cvet;
+              ctx.lineWidth = op.tolshina;
+              ctx.setLineDash([]);
+              ctx.strokeRect(op.x, op.y, op.w, op.h);
+            } else if (op.tip === "liniya") {
+              ctx.strokeStyle = op.cvet;
+              ctx.lineWidth = op.tolshina;
+              ctx.setLineDash([]);
+              ctx.beginPath();
+              ctx.moveTo(op.x1, op.y1);
+              ctx.lineTo(op.x2, op.y2);
+              ctx.stroke();
+            } else if (op.tip === "krug") {
+              ctx.strokeStyle = op.cvet;
+              ctx.lineWidth = op.tolshina;
+              ctx.setLineDash(
+                op.punktir ? [op.tolshina * 6, op.tolshina * 4] : [],
+              );
+              ctx.beginPath();
+              ctx.arc(op.x, op.y, op.r, 0, Math.PI * 2);
+              ctx.stroke();
+              ctx.setLineDash([]);
+            } else if (op.tip === "tekst") {
+              ctx.fillStyle = op.cvet;
+              ctx.font = shriftCanvas(op.px, op.shrift, op.ves);
+              ctx.textAlign = "center";
+              ctx.textBaseline = "alphabetic";
+              ctx.fillText(op.tekst, op.x, op.y);
+            }
+          }
+          ctx.restore();
+        }
+
         g.Yadro = {
           PREDEL,
           razobratSpisok,
@@ -286,6 +728,12 @@
           ptVPx,
           variantyRazryva,
           podobratKegl,
+          razmerLista,
+          SHABLON,
+          raskladka,
+          zaPolem,
+          izmeritCanvas,
+          narisovat,
         };
       })(typeof window !== "undefined" ? window : globalThis);
     </script>
