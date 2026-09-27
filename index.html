@@ -167,5 +167,70 @@
         };
       })(typeof window !== "undefined" ? window : globalThis);
     </script>
+    <script id="yadro">
+      (function (g) {
+        "use strict";
+        const O = g.Obshchee;
+        // Предел пачки: пятьдесят листов A4 в 300 точках на дюйм — и так ощутимый вес.
+        const PREDEL = 50;
+
+        /* ---------- Список участников ---------- */
+
+        const ZAGOLOVKI = new Set([
+          "фио",
+          "имя",
+          "участник",
+          "участники",
+          "фамилияимя",
+          "фамилияимяотчество",
+          "список",
+        ]);
+
+        function kluchImeni(imya) {
+          return imya.toLowerCase().replace(/ё/g, "е").replace(/\s+/g, " ");
+        }
+
+        // Строка из таблицы приходит ячейками через табуляцию: номер строки, имя,
+        // почта, телефон. Имя — это ячейки с буквами и без «@».
+        function razobratStroku(stroka) {
+          const yachejki = stroka
+            .replace(/ /g, " ")
+            .split("\t")
+            .map((y) => y.trim())
+            .filter((y) => /\p{L}/u.test(y) && !y.includes("@"));
+          return yachejki
+            .join(" ")
+            .replace(/^(?:\d+[.)]|[-–—•*])\s*/, "")
+            .replace(/[,;]+$/, "")
+            .replace(/(?<=\p{L}{2})\.$/u, "")
+            .replace(/\s+/g, " ")
+            .trim();
+        }
+
+        function razobratSpisok(tekst) {
+          const imena = [];
+          const povtory = [];
+          const vidennye = new Set();
+          for (const stroka of String(tekst).split(/\r\n|\r|\n/)) {
+            const imya = razobratStroku(stroka);
+            if (!imya) continue;
+            const kluch = kluchImeni(imya);
+            if (ZAGOLOVKI.has(kluch.replace(/[\s.]/g, ""))) continue;
+            if (vidennye.has(kluch)) {
+              povtory.push(imya);
+              continue;
+            }
+            vidennye.add(kluch);
+            imena.push(imya);
+          }
+          return { imena, povtory };
+        }
+
+        g.Yadro = {
+          PREDEL,
+          razobratSpisok,
+        };
+      })(typeof window !== "undefined" ? window : globalThis);
+    </script>
   </body>
 </html>
