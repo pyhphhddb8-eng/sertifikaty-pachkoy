@@ -721,6 +721,129 @@
           ctx.restore();
         }
 
+        /* ---------- Архив ZIP без сжатия ---------- */
+
+        // PNG уже сжаты, поэтому архив без сжатия: файлы кладутся как есть.
+        const CRC_TABLICA = (() => {
+          const t = new Uint32Array(256);
+          for (let n = 0; n < 256; n++) {
+            let c = n;
+            for (let k = 0; k < 8; k++)
+              c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+            t[n] = c >>> 0;
+          }
+          return t;
+        })();
+
+        function crc32(bajty) {
+          let c = 0xffffffff;
+          for (let i = 0; i < bajty.length; i++)
+            c = CRC_TABLICA[(c ^ bajty[i]) & 0xff] ^ (c >>> 8);
+          return (c ^ 0xffffffff) >>> 0;
+        }
+
+        function dosVremya(d) {
+          return {
+            vremya:
+              (d.getHours() << 11) |
+              (d.getMinutes() << 5) |
+              (d.getSeconds() >> 1),
+            data:
+              ((d.getFullYear() - 1980) << 9) |
+              ((d.getMonth() + 1) << 5) |
+              d.getDate(),
+          };
+        }
+
+        // Вес архива до того, как он собран: заголовки плюс сами файлы.
+        // fajly: [{ imya, razmer }]
+        function vesZip(fajly) {
+          const enc = new TextEncoder();
+          let ves = 22;
+          for (const f of fajly) {
+            const n = enc.encode(f.imya).length;
+            ves += 30 + n + f.razmer + 46 + n;
+          }
+          return ves;
+        }
+
+        // fajly: [{ imya, dannye: Uint8Array }] → Uint8Array архива.
+        // Флаг 0x0800 говорит архиватору, что имена в UTF-8 — иначе кириллица
+        // в именах файлов превращается в кракозябры.
+        function sobratZip(fajly, kogda) {
+          const enc = new TextEncoder();
+          const { vremya, data } = dosVremya(kogda || new Date());
+          const itog = new Uint8Array(
+            vesZip(
+              fajly.map((f) => ({ imya: f.imya, razmer: f.dannye.length })),
+            ),
+          );
+          const dv = new DataView(itog.buffer);
+          const katalog = [];
+          let p = 0;
+          for (const f of fajly) {
+            const imya = enc.encode(f.imya);
+            const crc = crc32(f.dannye);
+            katalog.push({
+              imya,
+              crc,
+              razmer: f.dannye.length,
+              smeshchenie: p,
+            });
+            dv.setUint32(p, 0x04034b50, true);
+            dv.setUint16(p + 4, 20, true);
+            dv.setUint16(p + 6, 0x0800, true);
+            dv.setUint16(p + 8, 0, true);
+            dv.setUint16(p + 10, vremya, true);
+            dv.setUint16(p + 12, data, true);
+            dv.setUint32(p + 14, crc, true);
+            dv.setUint32(p + 18, f.dannye.length, true);
+            dv.setUint32(p + 22, f.dannye.length, true);
+            dv.setUint16(p + 26, imya.length, true);
+            dv.setUint16(p + 28, 0, true);
+            itog.set(imya, p + 30);
+            itog.set(f.dannye, p + 30 + imya.length);
+            p += 30 + imya.length + f.dannye.length;
+          }
+          const nachaloKataloga = p;
+          for (const k of katalog) {
+            dv.setUint32(p, 0x02014b50, true);
+            dv.setUint16(p + 4, 20, true);
+            dv.setUint16(p + 6, 20, true);
+            dv.setUint16(p + 8, 0x0800, true);
+            dv.setUint16(p + 10, 0, true);
+            dv.setUint16(p + 12, vremya, true);
+            dv.setUint16(p + 14, data, true);
+            dv.setUint32(p + 16, k.crc, true);
+            dv.setUint32(p + 20, k.razmer, true);
+            dv.setUint32(p + 24, k.razmer, true);
+            dv.setUint16(p + 28, k.imya.length, true);
+            dv.setUint16(p + 30, 0, true);
+            dv.setUint16(p + 32, 0, true);
+            dv.setUint16(p + 34, 0, true);
+            dv.setUint16(p + 36, 0, true);
+            dv.setUint32(p + 38, 0, true);
+            dv.setUint32(p + 42, k.smeshchenie, true);
+            itog.set(k.imya, p + 46);
+            p += 46 + k.imya.length;
+          }
+          dv.setUint32(p, 0x06054b50, true);
+          dv.setUint16(p + 4, 0, true);
+          dv.setUint16(p + 6, 0, true);
+          dv.setUint16(p + 8, katalog.length, true);
+          dv.setUint16(p + 10, katalog.length, true);
+          dv.setUint32(p + 12, p - nachaloKataloga, true);
+          dv.setUint32(p + 16, nachaloKataloga, true);
+          dv.setUint16(p + 20, 0, true);
+          return itog;
+        }
+
+        function imyaFajla(nomer, imya) {
+          return (
+            O.krasivo(nomer) + " " + imya.replace(/[\\/:*?"<>|]/g, "") + ".png"
+          );
+        }
+
         g.Yadro = {
           PREDEL,
           razobratSpisok,
@@ -734,6 +857,10 @@
           zaPolem,
           izmeritCanvas,
           narisovat,
+          crc32,
+          vesZip,
+          sobratZip,
+          imyaFajla,
         };
       })(typeof window !== "undefined" ? window : globalThis);
     </script>
