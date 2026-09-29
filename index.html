@@ -844,6 +844,108 @@
           );
         }
 
+        /* ---------- Реестр ---------- */
+
+        // Реестр: { shkola, kursy: { КОД: название }, vydano: [{ nomer, kurs, data }] }.
+        // Имён в нём нет: он лежит в открытом доступе.
+        function pustojReestr(shablon) {
+          return {
+            shkola: shablon.shkola.nazvanie,
+            kursy: Object.fromEntries(
+              shablon.kursy.map((k) => [k.kod, k.nazvanie]),
+            ),
+            vydano: [],
+          };
+        }
+
+        function prochitatReestr(tekst) {
+          let r;
+          try {
+            r = JSON.parse(tekst);
+          } catch (e) {
+            throw new Error("Файл реестра не читается: это не JSON");
+          }
+          if (!r || typeof r.kursy !== "object" || !Array.isArray(r.vydano)) {
+            throw new Error(
+              "Это не файл реестра: в нём нет списка выданных номеров",
+            );
+          }
+          for (const z of r.vydano) {
+            if (!z || !O.razobrat(String(z.nomer)).ok)
+              throw new Error("В реестре испорченный номер: " + (z && z.nomer));
+          }
+          return r;
+        }
+
+        function sleduyushchijNomer(reestr, god, kodKursa) {
+          let max = 0;
+          for (const z of reestr.vydano) {
+            const r = O.razobrat(z.nomer);
+            if (r.ok && r.god === god && r.kodKursa === kodKursa)
+              max = Math.max(max, r.poryadkovyj);
+          }
+          return max + 1;
+        }
+
+        // Выдать номера пачке. Возвращает сертификаты (имя + номер) и новый реестр:
+        // старые записи плюс новые, без имён.
+        function vydat({ imena, kodKursa, data, nachatS, reestr }) {
+          if (imena.length === 0) throw new Error("Список участников пуст");
+          if (imena.length > PREDEL) {
+            throw new Error(
+              "В списке " +
+                imena.length +
+                " участников, предел пачки — " +
+                PREDEL +
+                ". Разбейте список на части.",
+            );
+          }
+          if (!Object.prototype.hasOwnProperty.call(reestr.kursy, kodKursa))
+            throw new Error("Неизвестный курс: " + kodKursa);
+          O.formatDaty(data);
+          const god = Number(data.slice(0, 4));
+          if (!Number.isInteger(nachatS) || nachatS < 1)
+            throw new Error("Нумерация начинается с целого числа от 1");
+          if (nachatS + imena.length - 1 > 999)
+            throw new Error(
+              "Порядковых номеров не хватит: по курсу за год их не больше 999",
+            );
+          const zanyato = new Set(reestr.vydano.map((z) => z.nomer));
+          const sertifikaty = imena.map((imya, i) => ({
+            imya,
+            nomer: O.sobrat(god, kodKursa, nachatS + i),
+          }));
+          const povtor = sertifikaty.find((s) => zanyato.has(s.nomer));
+          if (povtor) {
+            throw new Error(
+              "Номер " +
+                O.krasivo(povtor.nomer) +
+                " уже есть в реестре. Начните нумерацию с " +
+                sleduyushchijNomer(reestr, god, kodKursa) +
+                ".",
+            );
+          }
+          const vydano = reestr.vydano
+            .concat(
+              sertifikaty.map((s) => ({
+                nomer: s.nomer,
+                kurs: kodKursa,
+                data,
+              })),
+            )
+            .sort((a, b) =>
+              a.nomer < b.nomer ? -1 : a.nomer > b.nomer ? 1 : 0,
+            );
+          return {
+            sertifikaty,
+            reestr: { shkola: reestr.shkola, kursy: reestr.kursy, vydano },
+          };
+        }
+
+        function reestrVTekst(reestr) {
+          return JSON.stringify(reestr, null, 2) + "\n";
+        }
+
         g.Yadro = {
           PREDEL,
           razobratSpisok,
@@ -861,6 +963,11 @@
           vesZip,
           sobratZip,
           imyaFajla,
+          pustojReestr,
+          prochitatReestr,
+          sleduyushchijNomer,
+          vydat,
+          reestrVTekst,
         };
       })(typeof window !== "undefined" ? window : globalThis);
     </script>
