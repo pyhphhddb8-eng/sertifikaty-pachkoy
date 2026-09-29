@@ -206,9 +206,17 @@ details[open] summary {
   padding: 12px 14px;
   font-weight: 700;
 }
+[hidden] {
+  display: none !important;
+}
 .itog {
   display: grid;
   gap: 16px;
+}
+.peredelka {
+  display: grid;
+  gap: 6px;
+  justify-items: start;
 }
 .progress {
   color: var(--tihij);
@@ -422,6 +430,15 @@ a {
       Скачать реестр
     </button>
   </div>
+  <div class="peredelka" id="peredelka" hidden>
+    <button class="knopka knopka--vtoraya" type="button" id="peredelat" disabled>
+      Переделать эту пачку
+    </button>
+    <p class="podskazka">
+      Нашли опечатку? Исправьте список и нажмите — номера останутся прежними.
+    </p>
+  </div>
+  <p class="podskazka" id="sostav"></p>
   <p class="preduprezhdenie" id="preduprezhdenie" hidden></p>
   <p class="podskazka">
     Лист для печати: в окне печати выберите принтер или «Сохранить как PDF»,
@@ -439,11 +456,11 @@ a {
     по какому курсу и когда.
   </p>
   <p>
-    Проверочный знак считается от остальных семи. Измените одну цифру — номер
-    перестанет сходиться, поэтому соседний номер не подставить.
+    Последний знак ловит опечатку при наборе номера. Проверка подтверждает, что
+    сертификат с таким номером школа выдала, — но не что его выдали предъявителю:
+    имя сверяйте с документом или уточните в школе.
     <strong>От подделки номер не защищает:</strong> картинку может перерисовать
-    кто угодно. Он даёт способ проверить сертификат, не обращаясь к его
-    владельцу.
+    кто угодно.
   </p>
   <h2>Почему в реестре нет имён</h2>
   <p>
@@ -492,9 +509,8 @@ a {
         const FORMAT = new RegExp("^\\d{2}" + ZNAK + "{2}\\d{3}" + ZNAK + "$");
         const KOD_KURSA = new RegExp("^" + ZNAK + "{2}$");
 
-        // Проверочный знак по схеме Луна для алфавита из N знаков: ловит любую
-        // замену одного знака. Это защита от опечатки и от перебора соседних
-        // номеров, а не от подделки.
+        // Проверочный знак по схеме Луна для алфавита из N знаков: ловит опечатку
+        // в одном знаке. Это защита от опечатки, а не от подделки.
         function kontrolnyjZnak(telo) {
           let summa = 0;
           let mnozhitel = 2;
@@ -651,6 +667,30 @@ a {
           "фамилияимяотчество",
           "список",
         ]);
+        // Шапка таблицы: каждая непустая ячейка строки — слово из заголовка.
+        const SLOVA_SHAPKI = new Set([
+          ...ZAGOLOVKI,
+          "фамилия",
+          "отчество",
+          "email",
+          "eмейл",
+          "почта",
+          "электроннаяпочта",
+          "телефон",
+          "тел",
+          "№",
+          "n",
+        ]);
+        function strokaShapki(stroka) {
+          const yachejki = stroka
+            .replace(/ /g, " ")
+            .split("\t")
+            .map((y) => y.toLowerCase().replace(/[\s.]/g, ""))
+            .filter(Boolean);
+          return (
+            yachejki.length > 0 && yachejki.every((y) => SLOVA_SHAPKI.has(y))
+          );
+        }
 
         function kluchImeni(imya) {
           return imya.toLowerCase().replace(/ё/g, "е").replace(/\s+/g, " ");
@@ -678,6 +718,7 @@ a {
           const povtory = [];
           const vidennye = new Set();
           for (const stroka of String(tekst).split(/\r\n|\r|\n/)) {
+            if (strokaShapki(stroka)) continue;
             const imya = razobratStroku(stroka);
             if (!imya) continue;
             const kluch = kluchImeni(imya);
@@ -1359,9 +1400,9 @@ a {
           if (imena.length === 0) throw new Error("Список участников пуст");
           if (imena.length > PREDEL) {
             throw new Error(
-              "В списке " +
+              "Участников в списке: " +
                 imena.length +
-                " участников, предел пачки — " +
+                ", а в одной пачке не больше " +
                 PREDEL +
                 ". Разбейте список на части.",
             );
@@ -1412,6 +1453,54 @@ a {
           return JSON.stringify(reestr, null, 2) + "\n";
         }
 
+        /* ---------- Сессия: несколько пачек подряд ---------- */
+
+        // Сессия помнит реестр со всеми пачками этого окна и реестр до последней
+        // пачки — чтобы последнюю можно было переделать с теми же номерами.
+        function novayaSessiya(reestr) {
+          return { reestr, doPoslednej: null, poslednyaya: null };
+        }
+
+        // zamenit = false — пачка дописывается к реестру сессии;
+        // zamenit = true — последняя пачка рисуется заново с прежнего номера,
+        // её старые записи в реестре заменяются новыми.
+        function pachkaVSessii(sessiya, { imena, kodKursa, data, nachatS }, zamenit) {
+          if (zamenit) {
+            if (!sessiya.poslednyaya)
+              throw new Error("Переделывать нечего: в этом окне пачек ещё не было");
+            const staroeNachalo = sessiya.poslednyaya.nachatS;
+            const v = vydat({
+              imena,
+              kodKursa,
+              data,
+              nachatS: staroeNachalo,
+              reestr: sessiya.doPoslednej,
+            });
+            return {
+              sertifikaty: v.sertifikaty,
+              sessiya: {
+                reestr: v.reestr,
+                doPoslednej: sessiya.doPoslednej,
+                poslednyaya: {
+                  kodKursa,
+                  data,
+                  nachatS: staroeNachalo,
+                  chislo: imena.length,
+                },
+              },
+            };
+          }
+          const v = vydat({ imena, kodKursa, data, nachatS, reestr: sessiya.reestr });
+          return {
+            sertifikaty: v.sertifikaty,
+            sessiya: {
+              reestr: v.reestr,
+              doPoslednej: sessiya.reestr,
+              poslednyaya: { kodKursa, data, nachatS, chislo: imena.length },
+            },
+          };
+        }
+
         g.Yadro = {
           PREDEL,
           razobratSpisok,
@@ -1434,6 +1523,8 @@ a {
           sleduyushchijNomer,
           vydat,
           reestrVTekst,
+          novayaSessiya,
+          pachkaVSessii,
         };
       })(typeof window !== "undefined" ? window : globalThis);
     </script>
@@ -1446,7 +1537,10 @@ a {
     const $ = (id) => document.getElementById(id);
     const KNOPKI = ["skachatArhiv", "pechat", "skachatReestr"];
 
-    let reestr = Y.pustojReestr(S);
+    // Сессия копит все пачки этого окна; izFajla — сколько номеров пришло
+    // из загруженного файла реестра.
+    let sessiya = Y.novayaSessiya(Y.pustojReestr(S));
+    let izFajla = 0;
     let reestrZagruzhen = false;
     let gotovo = null;
     let ssylki = [];
@@ -1493,12 +1587,59 @@ a {
     }
 
     function obnovitNachalo() {
-      if (!reestrZagruzhen || !$("data").value) return;
+      if (!$("data").value) return;
       $("nachatS").value = Y.sleduyushchijNomer(
-        reestr,
+        sessiya.reestr,
         Number($("data").value.slice(0, 4)),
         $("kurs").value,
       );
+    }
+
+    function obnovitPeredelku() {
+      $("peredelka").hidden = !sessiya.poslednyaya;
+      $("peredelat").disabled = !sessiya.poslednyaya;
+    }
+
+    function obnovitSostav() {
+      const vsego = sessiya.reestr.vydano.length;
+      const novye = vsego - izFajla;
+      let tekst =
+        "В реестре " +
+        vsego +
+        " " +
+        sklonenie(vsego, ["номер", "номера", "номеров"]);
+      if (reestrZagruzhen)
+        tekst +=
+          ": " +
+          izFajla +
+          " из загруженного файла и " +
+          novye +
+          " " +
+          sklonenie(novye, ["новый", "новых", "новых"]) +
+          ".";
+      else tekst += " — все сделаны в этом окне.";
+      $("sostav").textContent = tekst;
+      if (reestrZagruzhen) {
+        $("preduprezhdenie").hidden = true;
+      } else {
+        $("preduprezhdenie").textContent =
+          "Файл реестра не загружен. Если сертификаты уже выдавали, загрузите " +
+          "текущий reestr.json в форме выше и сделайте пачки заново — иначе старые номера пропадут со страницы проверки.";
+        $("preduprezhdenie").hidden = false;
+      }
+    }
+
+    // Ошибка до рисования: старый результат не должен выглядеть актуальным.
+    function sbrositItog() {
+      ssylki.forEach((u) => URL.revokeObjectURL(u));
+      ssylki = [];
+      gotovo = null;
+      KNOPKI.forEach((id) => {
+        $(id).disabled = true;
+      });
+      $("prevyu").replaceChildren();
+      $("listy").replaceChildren();
+      $("itog").hidden = true;
     }
 
     // Canvas молча берёт запасной шрифт, если вшитый ещё не загружен:
@@ -1529,7 +1670,7 @@ a {
       img.src = url;
       img.width = mini.width;
       img.height = mini.height;
-      img.alt = "Сертификат: " + s.imya;
+      img.alt = "";
       const imya = document.createElement("p");
       imya.className = "prevyu__imya";
       imya.textContent = s.imya;
@@ -1574,6 +1715,8 @@ a {
       $("prevyu").replaceChildren();
       $("listy").replaceChildren();
       $("preduprezhdenie").hidden = true;
+      $("sostav").textContent = "";
+      $("skachatArhiv").textContent = "Скачать архив";
       $("itogZagolovok").textContent = "Рисую…";
       $("itog").hidden = false;
 
@@ -1641,12 +1784,6 @@ a {
         vysota +
         " точек: A4 при 300 точках на дюйм.";
       $("skachatArhiv").textContent = "Скачать архив · " + megabajty(ves);
-      if (!reestrZagruzhen) {
-        $("preduprezhdenie").textContent =
-          "В реестре только эта пачка. Если сертификаты уже выдавали, загрузите " +
-          "текущий reestr.json в форме выше и сделайте пачку заново — иначе старые номера пропадут со страницы проверки.";
-        $("preduprezhdenie").hidden = false;
-      }
       KNOPKI.forEach((id) => {
         $(id).disabled = false;
       });
@@ -1676,6 +1813,7 @@ a {
       .join("\n")
       .trim();
     obnovitSchet();
+    obnovitNachalo();
 
     $("spisok").addEventListener("input", obnovitSchet);
     $("kurs").addEventListener("change", obnovitNachalo);
@@ -1684,8 +1822,11 @@ a {
     $("fajlReestra").addEventListener("change", async () => {
       const fajl = $("fajlReestra").files[0];
       if (!fajl) {
-        reestr = Y.pustojReestr(S);
+        sessiya = Y.novayaSessiya(Y.pustojReestr(S));
+        izFajla = 0;
         reestrZagruzhen = false;
+        obnovitPeredelku();
+        obnovitNachalo();
         $("reestrStatus").textContent =
           "Старые номера останутся в новом реестре, новые продолжат нумерацию.";
         return;
@@ -1698,9 +1839,11 @@ a {
           Y.pustojReestr(S).kursy,
           prochitannyj.kursy,
         );
-        reestr = prochitannyj;
+        sessiya = Y.novayaSessiya(prochitannyj);
+        izFajla = prochitannyj.vydano.length;
         reestrZagruzhen = true;
-        const n = reestr.vydano.length;
+        obnovitPeredelku();
+        const n = izFajla;
         $("reestrStatus").textContent =
           "В реестре " +
           n +
@@ -1709,41 +1852,64 @@ a {
           ". Нумерация продолжится после последнего по выбранному курсу и году.";
         obnovitNachalo();
       } catch (e) {
-        reestr = Y.pustojReestr(S);
+        sessiya = Y.novayaSessiya(Y.pustojReestr(S));
+        izFajla = 0;
         reestrZagruzhen = false;
+        obnovitPeredelku();
+        obnovitNachalo();
         $("reestrStatus").textContent = e.message;
       }
     });
 
-    $("forma").addEventListener("submit", async (e) => {
-      e.preventDefault();
+    // zamenit = false — новая пачка дописывается к реестру окна;
+    // zamenit = true — последняя пачка рисуется заново с прежними номерами.
+    async function zapustit(zamenit) {
       $("oshibka").hidden = true;
       const kodKursa = $("kurs").value;
       const data = $("data").value;
-      let vydacha;
+      let itog;
       try {
         if (!data) throw new Error("Укажите дату выдачи");
-        vydacha = Y.vydat({
-          imena: Y.razobratSpisok($("spisok").value).imena,
-          kodKursa,
-          data,
-          nachatS: Number($("nachatS").value),
-          reestr,
-        });
+        itog = Y.pachkaVSessii(
+          sessiya,
+          {
+            imena: Y.razobratSpisok($("spisok").value).imena,
+            kodKursa,
+            data,
+            nachatS: Number($("nachatS").value),
+          },
+          zamenit,
+        );
       } catch (err) {
+        sbrositItog();
         pokazatOshibku(err.message);
         return;
       }
       $("sdelat").disabled = true;
+      $("peredelat").disabled = true;
       try {
-        await sdelat(vydacha, kodKursa, data);
+        await sdelat(
+          { sertifikaty: itog.sertifikaty, reestr: itog.sessiya.reestr },
+          kodKursa,
+          data,
+        );
+        sessiya = itog.sessiya;
+        obnovitSostav();
+        obnovitNachalo();
       } catch (err) {
-        $("itog").hidden = true;
+        sbrositItog();
         pokazatOshibku("Не получилось нарисовать сертификаты: " + err.message);
       } finally {
         $("sdelat").disabled = false;
+        obnovitPeredelku();
       }
+    }
+
+    $("forma").addEventListener("submit", (e) => {
+      e.preventDefault();
+      zapustit(false);
     });
+    $("peredelat").addEventListener("click", () => zapustit(true));
 
     $("skachatArhiv").addEventListener("click", async () => {
       if (!gotovo) return;

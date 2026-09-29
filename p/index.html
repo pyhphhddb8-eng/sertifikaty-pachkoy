@@ -161,6 +161,14 @@ a:focus-visible {
   cursor: pointer;
   font-variant-numeric: tabular-nums;
 }
+[hidden] {
+  display: none !important;
+}
+.nomer {
+  white-space: nowrap;
+  font-family: "PT Sans", system-ui, sans-serif;
+  font-weight: 700;
+}
 .otvet {
   border-radius: var(--radius);
   padding: 20px 24px;
@@ -265,9 +273,10 @@ a {
   </p>
   <h2>Чего проверка не показывает</h2>
   <p>
-    Подлинности самой картинки. Номер не защищает от подделки: сертификат можно
-    перерисовать. Последний знак номера — проверочный: он не даёт подобрать
-    соседний номер, но и только.
+    Последний знак ловит опечатку при наборе номера. Проверка подтверждает, что
+    сертификат с таким номером школа выдала, — но не что его выдали предъявителю:
+    имя сверяйте с документом или уточните в школе.
+    <strong>От подделки номер не защищает:</strong> картинку можно перерисовать.
   </p>
   <p class="podval">
     Сертификаты сделаны <a href="../">генератором сертификатов пачкой</a>.
@@ -284,9 +293,8 @@ a {
         const FORMAT = new RegExp("^\\d{2}" + ZNAK + "{2}\\d{3}" + ZNAK + "$");
         const KOD_KURSA = new RegExp("^" + ZNAK + "{2}$");
 
-        // Проверочный знак по схеме Луна для алфавита из N знаков: ловит любую
-        // замену одного знака. Это защита от опечатки и от перебора соседних
-        // номеров, а не от подделки.
+        // Проверочный знак по схеме Луна для алфавита из N знаков: ловит опечатку
+        // в одном знаке. Это защита от опечатки, а не от подделки.
         function kontrolnyjZnak(telo) {
           let summa = 0;
           let mnozhitel = 2;
@@ -445,16 +453,26 @@ a {
           $("primer").hidden = false;
         }
       })
-      .catch(() => {
+      .catch((e) => {
+        console.error("Реестр не загрузился:", e);
         reestr = null;
       });
 
+    // Номер в ответе — отдельным span, чтобы не рвался между строками.
+    function sNomerom(pered, nomer, posle) {
+      const span = document.createElement("span");
+      span.className = "nomer";
+      span.textContent = O.krasivo(nomer);
+      return [pered, span, posle];
+    }
+
+    // Заголовок и абзацы — строки или массивы из строк и узлов.
     function otvet(vid, zagolovok, stroki) {
       const h = document.createElement("h2");
-      h.textContent = zagolovok;
+      h.append(...[].concat(zagolovok));
       const abzacy = stroki.map((t) => {
         const p = document.createElement("p");
-        p.textContent = t;
+        p.append(...[].concat(t));
         return p;
       });
       $("otvet").className = "otvet otvet--" + vid;
@@ -466,22 +484,24 @@ a {
       await zagruzka;
       if (!reestr) {
         otvet("oshibka", "Реестр школы не загрузился", [
-          "Проверьте интернет и попробуйте ещё раз.",
+          "Обновите страницу; если не поможет — напишите в школу.",
         ]);
         return;
       }
       const r = O.najti(reestr, vvod);
       if (r.sostoyanie === "vydan") {
-        otvet("vydan", "Сертификат № " + O.krasivo(r.nomer) + " выдан", [
+        otvet("vydan", sNomerom("Сертификат №\u00a0", r.nomer, " выдан"), [
           "Курс: " + r.kurs,
           "Дата выдачи: " + O.formatDaty(r.data),
           "Имя владельца здесь не показывается — сверьте его с сертификатом.",
         ]);
       } else if (r.sostoyanie === "net") {
         otvet("net", "Такой сертификат не выдавался", [
-          "Номер " +
-            O.krasivo(r.nomer) +
+          sNomerom(
+            "Номер ",
+            r.nomer,
             " набран без ошибок, но в реестре школы его нет.",
+          ),
         ]);
       } else {
         otvet("oshibka", "В номере ошибка", [
