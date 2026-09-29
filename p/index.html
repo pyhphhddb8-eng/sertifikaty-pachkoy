@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%238a4b2a'/%3E%3Ccircle cx='16' cy='16' r='6' fill='%23fbf7f1'/%3E%3C/svg%3E" />
 <title>Проверка сертификата — школа «Обжиг»</title>
 <style>
 /* ШРИФТЫ: начало */
@@ -13,11 +14,265 @@
 /* ШРИФТЫ: конец */
 </style>
 <style id="oformlenie">
+:root {
+  --fon: #f5efe7;
+  --karta: #fffcf8;
+  --tekst: #2b211c;
+  --tihij: #6b5d53;
+  --liniya: #e2d6c8;
+  --glavnyj: #8a4b2a;
+  --glavnyj-temnee: #6c3920;
+  --ok: #2e6a3a;
+  --ok-fon: #e8f3ea;
+  --oshibka: #a3261b;
+  --oshibka-fon: #fbeae7;
+  --radius: 12px;
+  --ten: 0 1px 2px rgba(43, 33, 28, 0.06), 0 8px 24px rgba(43, 33, 28, 0.06);
+}
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html {
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  margin: 0;
+  background: var(--fon);
+  color: var(--tekst);
+  font:
+    400 17px/1.55 "PT Sans",
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
+}
+.stranica {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 40px 16px 64px;
+  display: grid;
+  gap: 24px;
+}
+h1,
+h2 {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-weight: 600;
+  line-height: 1.1;
+  margin: 0;
+  text-wrap: balance;
+}
+h1 {
+  font-size: clamp(40px, 7vw, 56px);
+}
+h2 {
+  font-size: 28px;
+}
+p {
+  margin: 0;
+}
+.shapka {
+  display: grid;
+  gap: 12px;
+}
+.shapka__metka {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 13px;
+  color: var(--glavnyj);
+}
+.shapka__podvodka {
+  font-size: 19px;
+}
+.uslovno,
+.podskazka {
+  font-size: 14px;
+  color: var(--tihij);
+}
+.karta {
+  background: var(--karta);
+  border: 1px solid var(--liniya);
+  border-radius: var(--radius);
+  box-shadow: var(--ten);
+  padding: 24px;
+}
+.forma {
+  display: grid;
+  gap: 10px;
+}
+label {
+  font-weight: 700;
+  font-size: 15px;
+}
+.stroka {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+input {
+  flex: 1 1 220px;
+  min-width: 0;
+  font: inherit;
+  font-size: 20px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: inherit;
+  background: #fff;
+  border: 1px solid #c9b9a9;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+input::placeholder {
+  text-transform: none;
+  letter-spacing: 0;
+  color: #9a8b80;
+}
+input:focus-visible,
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid var(--glavnyj);
+  outline-offset: 2px;
+}
+.knopka {
+  font: inherit;
+  font-weight: 700;
+  border: 0;
+  border-radius: 8px;
+  padding: 12px 20px;
+  min-height: 48px;
+  background: var(--glavnyj);
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+.knopka:hover {
+  background: var(--glavnyj-temnee);
+}
+.ssylka {
+  font: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--glavnyj-temnee);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  font-variant-numeric: tabular-nums;
+}
+.otvet {
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  display: grid;
+  gap: 6px;
+  border: 1px solid transparent;
+}
+.otvet h2 {
+  font-size: 28px;
+}
+.otvet--vydan {
+  background: var(--ok-fon);
+  border-color: #b9d8bf;
+}
+.otvet--vydan h2 {
+  color: var(--ok);
+}
+.otvet--net,
+.otvet--oshibka {
+  background: var(--oshibka-fon);
+  border-color: #efc4bd;
+}
+.otvet--net h2,
+.otvet--oshibka h2 {
+  color: var(--oshibka);
+}
+.poyasnenie {
+  display: grid;
+  gap: 12px;
+}
+.poyasnenie h2 {
+  font-size: 24px;
+  margin-top: 8px;
+}
+a {
+  color: var(--glavnyj-temnee);
+  text-underline-offset: 3px;
+}
+.podval {
+  font-size: 13px;
+  color: var(--tihij);
+}
+@media (max-width: 640px) {
+  .stranica {
+    padding-top: 24px;
+  }
+  .karta {
+    padding: 18px;
+  }
+  .knopka {
+    width: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
 </style>
 </head>
 <body>
 <main class="stranica">
-<p class="uslovno">Пример: школа вымышленная, номера условные.</p>
+<header class="shapka">
+  <p class="shapka__metka">Школа керамики «Обжиг»</p>
+  <h1>Проверка сертификата</h1>
+  <p class="shapka__podvodka">
+    Введите номер с сертификата — восемь знаков. Дефисы и пробелы можно не
+    ставить.
+  </p>
+  <p class="uslovno">Пример: школа вымышленная, номера условные.</p>
+</header>
+
+<form id="forma" class="karta forma" novalidate>
+  <label for="nomer">Номер сертификата</label>
+  <div class="stroka">
+    <input
+      id="nomer"
+      name="n"
+      autocomplete="off"
+      autocapitalize="characters"
+      spellcheck="false"
+      placeholder="например, 26-GK-001-5"
+      maxlength="24"
+    />
+    <button class="knopka" type="submit">Проверить</button>
+  </div>
+  <p class="podskazka" id="primer" hidden>
+    Номер из примера:
+    <button type="button" class="ssylka" id="primerNomer"></button>
+  </p>
+</form>
+
+<section class="otvet" id="otvet" aria-live="polite" hidden></section>
+
+<section class="karta poyasnenie" aria-labelledby="chtoPokazyvaet">
+  <h2 id="chtoPokazyvaet">Что показывает проверка</h2>
+  <p>
+    Что школа действительно выдала сертификат с этим номером, — по какому курсу
+    и когда. Имени владельца здесь нет: реестр открыт всем, а список фамилий в
+    открытом доступе — публикация персональных данных. Имя вы видите на самом
+    сертификате.
+  </p>
+  <h2>Чего проверка не показывает</h2>
+  <p>
+    Подлинности самой картинки. Номер не защищает от подделки: сертификат можно
+    перерисовать. Последний знак номера — проверочный: он не даёт подобрать
+    соседний номер, но и только.
+  </p>
+  <p class="podval">
+    Сертификаты сделаны <a href="../">генератором сертификатов пачкой</a>.
+  </p>
+</section>
 </main>
 <script id="obshchee">
       (function (g) {
@@ -170,5 +425,85 @@
         };
       })(typeof window !== "undefined" ? window : globalThis);
     </script>
+<script id="proverka">
+  (function () {
+    "use strict";
+    const O = window.Obshchee;
+    const $ = (id) => document.getElementById(id);
+    let reestr = null;
+
+    // Реестр лежит рядом со страницей; своего адреса у него нет.
+    const zagruzka = fetch("reestr.json", { cache: "no-cache" })
+      .then((o) => {
+        if (!o.ok) throw new Error("HTTP " + o.status);
+        return o.json();
+      })
+      .then((r) => {
+        reestr = r;
+        if (r.vydano.length) {
+          $("primerNomer").textContent = O.krasivo(r.vydano[0].nomer);
+          $("primer").hidden = false;
+        }
+      })
+      .catch(() => {
+        reestr = null;
+      });
+
+    function otvet(vid, zagolovok, stroki) {
+      const h = document.createElement("h2");
+      h.textContent = zagolovok;
+      const abzacy = stroki.map((t) => {
+        const p = document.createElement("p");
+        p.textContent = t;
+        return p;
+      });
+      $("otvet").className = "otvet otvet--" + vid;
+      $("otvet").replaceChildren(h, ...abzacy);
+      $("otvet").hidden = false;
+    }
+
+    async function proverit(vvod) {
+      await zagruzka;
+      if (!reestr) {
+        otvet("oshibka", "Реестр школы не загрузился", [
+          "Проверьте интернет и попробуйте ещё раз.",
+        ]);
+        return;
+      }
+      const r = O.najti(reestr, vvod);
+      if (r.sostoyanie === "vydan") {
+        otvet("vydan", "Сертификат № " + O.krasivo(r.nomer) + " выдан", [
+          "Курс: " + r.kurs,
+          "Дата выдачи: " + O.formatDaty(r.data),
+          "Имя владельца здесь не показывается — сверьте его с сертификатом.",
+        ]);
+      } else if (r.sostoyanie === "net") {
+        otvet("net", "Такой сертификат не выдавался", [
+          "Номер " +
+            O.krasivo(r.nomer) +
+            " набран без ошибок, но в реестре школы его нет.",
+        ]);
+      } else {
+        otvet("oshibka", "В номере ошибка", [
+          "В номере восемь знаков: две цифры года, две латинские буквы курса, три цифры и проверочный знак. Букв O и I в номерах нет — это цифры 0 и 1.",
+        ]);
+      }
+    }
+
+    $("forma").addEventListener("submit", (e) => {
+      e.preventDefault();
+      proverit($("nomer").value);
+    });
+    $("primerNomer").addEventListener("click", () => {
+      $("nomer").value = $("primerNomer").textContent;
+      proverit($("nomer").value);
+    });
+    const izAdresa = new URLSearchParams(location.search).get("n");
+    if (izAdresa) {
+      $("nomer").value = izAdresa;
+      proverit(izAdresa);
+    }
+  })();
+</script>
 </body>
 </html>
