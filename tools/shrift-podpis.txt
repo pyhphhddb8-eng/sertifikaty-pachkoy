@@ -3,6 +3,6 @@
           ofl/ptsans/PT_Sans-Web-Regular.ttf, ofl/ptsans/PT_Sans-Web-Bold.ttf
 Cormorant: ось wght сужена до 500–700
 Набор: латиница, Latin-1, кириллица U+0400–045F и Ґґ, типографские знаки
-Размеры после подрезки: cormorant.woff2 34.8 КБ, ptsans-400.woff2 13.6 КБ, ptsans-700.woff2 13.9 КБ
+Размеры после подрезки: cormorant.woff2 35.1 КБ, ptsans-400.woff2 13.7 КБ, ptsans-700.woff2 14.0 КБ
 Подрезка: /usr/bin/python3 tools/shrift.py
-Дата подрезки: 27.09.2026
+Дата подрезки: 29.09.2026
