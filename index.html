@@ -12,14 +12,476 @@
 @font-face{font-family:"PT Sans";font-style:normal;font-weight:700;font-display:block;src:url(data:font/woff2;base64,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) format("woff2")}
 /* ШРИФТЫ: конец */
     </style>
-    <style id="oformlenie"></style>
+    <style id="oformlenie">
+:root {
+  --fon: #f5efe7;
+  --karta: #fffcf8;
+  --tekst: #2b211c;
+  --tihij: #6b5d53;
+  --liniya: #e2d6c8;
+  --glavnyj: #8a4b2a;
+  --glavnyj-temnee: #6c3920;
+  --glavnyj-svetlyj: #f3e6dc;
+  --oshibka: #a3261b;
+  --oshibka-fon: #fbeae7;
+  --vnimanie-fon: #fff4dc;
+  --radius: 12px;
+  --ten: 0 1px 2px rgba(43, 33, 28, 0.06), 0 8px 24px rgba(43, 33, 28, 0.06);
+}
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html {
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  margin: 0;
+  background: var(--fon);
+  color: var(--tekst);
+  font:
+    400 17px/1.55 "PT Sans",
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
+}
+.stranica {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 40px 16px 64px;
+  display: grid;
+  gap: 24px;
+}
+h1,
+h2 {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-weight: 600;
+  line-height: 1.1;
+  margin: 0;
+  text-wrap: balance;
+}
+h1 {
+  font-size: clamp(40px, 7vw, 64px);
+  letter-spacing: -0.01em;
+  overflow-wrap: break-word;
+}
+h2 {
+  font-size: 30px;
+}
+p {
+  margin: 0;
+}
+.shapka {
+  display: grid;
+  gap: 12px;
+}
+.shapka__metka {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 13px;
+  color: var(--glavnyj);
+}
+.shapka__podvodka {
+  font-size: 19px;
+  max-width: 40em;
+}
+.uslovno {
+  font-size: 14px;
+  color: var(--tihij);
+}
+.karta {
+  background: var(--karta);
+  border: 1px solid var(--liniya);
+  border-radius: var(--radius);
+  box-shadow: var(--ten);
+  padding: 24px;
+}
+.forma form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.pole {
+  display: grid;
+  gap: 6px;
+  align-content: start;
+  min-width: 0;
+}
+.pole--shirokoe {
+  grid-column: 1/-1;
+}
+label,
+summary {
+  font-weight: 700;
+  font-size: 15px;
+}
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+  background: #fff;
+  border: 1px solid #c9b9a9;
+  border-radius: 8px;
+  padding: 10px 12px;
+  width: 100%;
+  min-width: 0;
+}
+input[type="file"] {
+  padding: 8px;
+}
+textarea {
+  resize: vertical;
+  min-height: 220px;
+  line-height: 1.5;
+}
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+button:focus-visible,
+summary:focus-visible,
+a:focus-visible {
+  outline: 3px solid var(--glavnyj);
+  outline-offset: 2px;
+}
+.podskazka {
+  font-size: 14px;
+  color: var(--tihij);
+}
+.podskazka--oshibka {
+  color: var(--oshibka);
+  font-weight: 700;
+}
+details summary {
+  cursor: pointer;
+  color: var(--glavnyj-temnee);
+}
+details[open] summary {
+  margin-bottom: 12px;
+}
+.knopka {
+  font: inherit;
+  font-weight: 700;
+  border: 0;
+  border-radius: 8px;
+  padding: 12px 20px;
+  min-height: 48px;
+  background: var(--glavnyj);
+  color: #fff;
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    transform 0.15s;
+}
+.knopka:hover {
+  background: var(--glavnyj-temnee);
+}
+.knopka:active {
+  transform: translateY(1px);
+}
+.knopka:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.knopka--vtoraya {
+  background: var(--glavnyj-svetlyj);
+  color: var(--glavnyj-temnee);
+}
+.knopka--vtoraya:hover {
+  background: #ead6c8;
+}
+.forma .knopka {
+  grid-column: 1/-1;
+  justify-self: start;
+}
+.oshibka {
+  grid-column: 1/-1;
+  background: var(--oshibka-fon);
+  color: var(--oshibka);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-weight: 700;
+}
+.itog {
+  display: grid;
+  gap: 16px;
+}
+.progress {
+  color: var(--tihij);
+}
+.dejstviya {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.preduprezhdenie {
+  background: var(--vnimanie-fon);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 15px;
+}
+.prevyu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+.prevyu li {
+  display: grid;
+  gap: 4px;
+  font-size: 14px;
+  align-content: start;
+}
+.prevyu img {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--liniya);
+  border-radius: 6px;
+  background: #fff;
+}
+.prevyu__imya {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.prevyu__nomer {
+  color: var(--tihij);
+  font-variant-numeric: tabular-nums;
+}
+.prevyu__vnimanie {
+  color: var(--oshibka);
+}
+.poyasnenie {
+  display: grid;
+  gap: 12px;
+}
+.poyasnenie h2 {
+  font-size: 26px;
+  margin-top: 8px;
+}
+.poyasnenie p {
+  max-width: 44em;
+}
+a {
+  color: var(--glavnyj-temnee);
+  text-underline-offset: 3px;
+}
+.podval {
+  font-size: 13px;
+  color: var(--tihij);
+}
+@media (max-width: 640px) {
+  .stranica {
+    padding-top: 24px;
+  }
+  .forma form {
+    grid-template-columns: 1fr;
+  }
+  .karta {
+    padding: 18px;
+  }
+  .dejstviya .knopka {
+    width: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
+/* Лист для печати: на экране не виден, при печати виден только он.
+   Поля листа нулевые: картинка сама A4, а рамка сертификата стоит
+   в 12 мм от края — дальше, чем принтер не допечатывает. */
+.listy {
+  display: none;
+}
+@page {
+  size: A4 landscape;
+  margin: 0;
+}
+@media print {
+  body {
+    background: #fff;
+  }
+  .stranica {
+    display: none;
+  }
+  .listy {
+    display: block;
+  }
+  .list {
+    width: 297mm;
+    height: 210mm;
+    overflow: hidden;
+    break-after: page;
+    page-break-after: always;
+  }
+  .list:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
+  .list img {
+    display: block;
+    width: 297mm;
+    height: 210mm;
+  }
+}
+</style>
   </head>
   <body>
     <main class="stranica">
-      <p class="uslovno">Пример: школа вымышленная, имена и номера условные.</p>
-    </main>
+<header class="shapka">
+  <p class="shapka__metka">Школа керамики «Обжиг»</p>
+  <h1>Сертификаты пачкой</h1>
+  <p class="shapka__podvodka">
+    Вставьте список участников потока — получите сертификаты комплектом: архив
+    картинок, лист для печати и реестр, по которому любой сертификат проверяется
+    по номеру.
+  </p>
+  <p class="uslovno">Пример: школа вымышленная, имена и номера условные.</p>
+</header>
+
+<section class="karta forma" aria-label="Данные для сертификатов">
+  <form id="forma" novalidate>
+    <div class="pole">
+      <label for="kurs">Курс</label>
+      <select id="kurs"></select>
+    </div>
+    <div class="pole">
+      <label for="data">Дата выдачи</label>
+      <input id="data" type="date" required />
+    </div>
+    <div class="pole pole--shirokoe">
+      <label for="spisok">Участники — по одному в строке</label>
+      <textarea
+        id="spisok"
+        rows="10"
+        spellcheck="false"
+        aria-describedby="schet"
+      ></textarea>
+      <p class="podskazka" id="schet" aria-live="polite"></p>
+      <p class="podskazka">
+        Можно вставить столбец из таблицы или список из письма: номера строк,
+        почту и телефоны инструмент уберёт сам, повторы тоже.
+      </p>
+    </div>
+    <details class="pole pole--shirokoe">
+      <summary>
+        Сертификаты уже выдавали? Продолжить нумерацию по реестру
+      </summary>
+      <div class="pole">
+        <label for="fajlReestra"
+          >Текущий reestr.json со страницы проверки</label
+        >
+        <input id="fajlReestra" type="file" accept=".json,application/json" />
+        <p class="podskazka" id="reestrStatus" aria-live="polite">
+          Старые номера останутся в новом реестре, новые продолжат нумерацию.
+        </p>
+      </div>
+    </details>
+    <div class="pole">
+      <label for="nachatS">Первый порядковый номер</label>
+      <input
+        id="nachatS"
+        type="number"
+        min="1"
+        max="999"
+        step="1"
+        value="1"
+        required
+      />
+    </div>
+    <p class="oshibka" id="oshibka" role="alert" hidden></p>
+    <button class="knopka" type="submit" id="sdelat">
+      Сделать сертификаты
+    </button>
+  </form>
+</section>
+
+<section class="karta itog" id="itog" hidden aria-labelledby="itogZagolovok">
+  <h2 id="itogZagolovok">Готово</h2>
+  <p class="progress" id="progress" aria-live="polite"></p>
+  <div class="dejstviya">
+    <button class="knopka" type="button" id="skachatArhiv" disabled>
+      Скачать архив
+    </button>
+    <button class="knopka knopka--vtoraya" type="button" id="pechat" disabled>
+      Лист для печати / PDF
+    </button>
+    <button
+      class="knopka knopka--vtoraya"
+      type="button"
+      id="skachatReestr"
+      disabled
+    >
+      Скачать реестр
+    </button>
+  </div>
+  <p class="preduprezhdenie" id="preduprezhdenie" hidden></p>
+  <p class="podskazka">
+    Лист для печати: в окне печати выберите принтер или «Сохранить как PDF»,
+    масштаб 100 %. Реестр положите рядом со страницей проверки на сайте школы
+    вместо старого.
+  </p>
+  <ul class="prevyu" id="prevyu"></ul>
+</section>
+
+<section class="karta poyasnenie" aria-labelledby="proNomer">
+  <h2 id="proNomer">Что значит номер</h2>
+  <p>
+    Номер из восьми знаков: год, код курса, порядковый номер и проверочный знак.
+    На странице проверки по нему видно, что сертификат с таким номером выдан, —
+    по какому курсу и когда.
+  </p>
+  <p>
+    Проверочный знак считается от остальных семи. Измените одну цифру — номер
+    перестанет сходиться, поэтому соседний номер не подставить.
+    <strong>От подделки номер не защищает:</strong> картинку может перерисовать
+    кто угодно. Он даёт способ проверить сертификат, не обращаясь к его
+    владельцу.
+  </p>
+  <h2>Почему в реестре нет имён</h2>
+  <p>
+    Реестр лежит на сайте школы в открытом доступе, а список фамилий в открытом
+    доступе — публикация персональных данных: на неё нужно согласие каждого
+    участника. Проверяющему имя не нужно — оно на сертификате, который он держит
+    в руках.
+  </p>
+  <p>
+    Как устроить согласие и документы, когда сайт всё-таки собирает данные, — в
+    соседней работе:
+    <a href="https://pyhphhddb8-eng.github.io/klinika-152fz/"
+      >комплект 152-ФЗ для сайта с онлайн-записью</a
+    >.
+  </p>
+  <h2>Где живёт список участников</h2>
+  <p>
+    Только в этом окне. Страница никуда его не отправляет и работает без
+    интернета: её можно сохранить на диск и открывать двойным щелчком.
+  </p>
+  <p class="podval">
+    Шрифты Cormorant Garamond и PT Sans — SIL Open Font License 1.1, вшиты в
+    страницу.
+  </p>
+</section>
+</main>
     <div class="listy" id="listy" aria-hidden="true"></div>
-    <script id="obshchee">
+    <script id="primer" type="text/plain">
+  ФИО
+  1. Иванова Анна Сергеевна
+  2. Ли Ян
+  3. Анна-Марина Константинопольская-Преображенская Святославовна
+  4. Белова-Заречная Ксения Игоревна
+  5. Петров Пётр
+  6. петров петр
+  7. Мамедов Эльчин Рашид оглы
+  8. Ёлкина Мария-Луиза
+</script>
+<script id="obshchee">
       (function (g) {
         "use strict";
         // Алфавит номера: цифры и заглавная латиница без I и O — их путают с 1 и 0.
@@ -974,5 +1436,334 @@
         };
       })(typeof window !== "undefined" ? window : globalThis);
     </script>
+<script id="interfejs">
+  (function () {
+    "use strict";
+    const O = window.Obshchee;
+    const Y = window.Yadro;
+    const S = Y.SHABLON;
+    const $ = (id) => document.getElementById(id);
+    const KNOPKI = ["skachatArhiv", "pechat", "skachatReestr"];
+
+    let reestr = Y.pustojReestr(S);
+    let reestrZagruzhen = false;
+    let gotovo = null;
+    let ssylki = [];
+
+    function segodnya() {
+      const d = new Date();
+      return (
+        d.getFullYear() +
+        "-" +
+        String(d.getMonth() + 1).padStart(2, "0") +
+        "-" +
+        String(d.getDate()).padStart(2, "0")
+      );
+    }
+
+    function sklonenie(n, formy) {
+      const d = n % 100;
+      const e = n % 10;
+      if (d >= 11 && d <= 14) return formy[2];
+      if (e === 1) return formy[0];
+      if (e >= 2 && e <= 4) return formy[1];
+      return formy[2];
+    }
+
+    function megabajty(bajty) {
+      return (bajty / 1048576).toFixed(1).replace(".", ",") + " МБ";
+    }
+
+    function pokazatOshibku(tekst) {
+      $("oshibka").textContent = tekst;
+      $("oshibka").hidden = false;
+    }
+
+    function obnovitSchet() {
+      const { imena, povtory } = Y.razobratSpisok($("spisok").value);
+      let tekst = "Участников: " + imena.length;
+      if (povtory.length) tekst += ". Повторы убраны: " + povtory.join(", ");
+      const lishnie = imena.length > Y.PREDEL;
+      if (lishnie)
+        tekst +=
+          ". Это больше предела в " + Y.PREDEL + " — разбейте список на части";
+      $("schet").textContent = tekst;
+      $("schet").classList.toggle("podskazka--oshibka", lishnie);
+    }
+
+    function obnovitNachalo() {
+      if (!reestrZagruzhen || !$("data").value) return;
+      $("nachatS").value = Y.sleduyushchijNomer(
+        reestr,
+        Number($("data").value.slice(0, 4)),
+        $("kurs").value,
+      );
+    }
+
+    // Canvas молча берёт запасной шрифт, если вшитый ещё не загружен:
+    // грузим явно и проверяем, что грани шрифта действительно нашлись.
+    async function zagruzitShrifty() {
+      for (const f of [
+        '600 100px "Cormorant Garamond"',
+        '400 100px "PT Sans"',
+        '700 100px "PT Sans"',
+      ]) {
+        const grani = await document.fonts.load(f);
+        if (!grani.length) throw new Error("не загрузился шрифт " + f);
+      }
+    }
+
+    function vBlob(holst) {
+      return new Promise((ok, ne) =>
+        holst.toBlob(
+          (b) => (b ? ok(b) : ne(new Error("картинка не собралась"))),
+          "image/png",
+        ),
+      );
+    }
+
+    function dobavitPrevyu(s, url, mini, melko, vylezli) {
+      const li = document.createElement("li");
+      const img = document.createElement("img");
+      img.src = url;
+      img.width = mini.width;
+      img.height = mini.height;
+      img.alt = "Сертификат: " + s.imya;
+      const imya = document.createElement("p");
+      imya.className = "prevyu__imya";
+      imya.textContent = s.imya;
+      const nomer = document.createElement("p");
+      nomer.className = "prevyu__nomer";
+      nomer.textContent = "№ " + O.krasivo(s.nomer);
+      li.append(img, imya, nomer);
+      const zamechaniya = [];
+      if (melko)
+        zamechaniya.push(
+          "Имя очень длинное, кегль мельче обычного — посмотрите лист",
+        );
+      if (vylezli.length)
+        zamechaniya.push("За полем печати: " + vylezli.join(", "));
+      for (const z of zamechaniya) {
+        const p = document.createElement("p");
+        p.className = "prevyu__vnimanie";
+        p.textContent = z;
+        li.append(p);
+      }
+      $("prevyu").append(li);
+    }
+
+    function dobavitList(s, url) {
+      const list = document.createElement("div");
+      list.className = "list";
+      const img = document.createElement("img");
+      img.src = url;
+      img.alt = "Сертификат: " + s.imya;
+      list.append(img);
+      $("listy").append(list);
+    }
+
+    async function sdelat(vydacha, kodKursa, data) {
+      await zagruzitShrifty();
+      ssylki.forEach((u) => URL.revokeObjectURL(u));
+      ssylki = [];
+      gotovo = null;
+      KNOPKI.forEach((id) => {
+        $(id).disabled = true;
+      });
+      $("prevyu").replaceChildren();
+      $("listy").replaceChildren();
+      $("preduprezhdenie").hidden = true;
+      $("itogZagolovok").textContent = "Рисую…";
+      $("itog").hidden = false;
+
+      const { shirina, vysota } = Y.razmerLista(S);
+      const holst = document.createElement("canvas");
+      holst.width = shirina;
+      holst.height = vysota;
+      const ctx = holst.getContext("2d");
+      const izmerit = Y.izmeritCanvas(ctx);
+      // Превью рисуем отдельной маленькой картинкой: пятьдесят листов
+      // в полном размере на экране съели бы память браузера.
+      const mini = document.createElement("canvas");
+      mini.width = 600;
+      mini.height = Math.round((600 * vysota) / shirina);
+      const miniCtx = mini.getContext("2d");
+      const kurs = vydacha.reestr.kursy[kodKursa];
+      const vsego = vydacha.sertifikaty.length;
+      const fajly = [];
+
+      for (let i = 0; i < vsego; i++) {
+        const s = vydacha.sertifikaty[i];
+        $("progress").textContent = "Рисую " + (i + 1) + " из " + vsego + "…";
+        const raskl = Y.raskladka(
+          S,
+          { imya: s.imya, kurs, data, nomer: s.nomer },
+          izmerit,
+        );
+        ctx.clearRect(0, 0, shirina, vysota);
+        Y.narisovat(ctx, raskl);
+        const blob = await vBlob(holst);
+        const bolshaya = URL.createObjectURL(blob);
+        miniCtx.drawImage(holst, 0, 0, mini.width, mini.height);
+        const malenkaya = URL.createObjectURL(await vBlob(mini));
+        ssylki.push(bolshaya, malenkaya);
+        fajly.push({ imya: Y.imyaFajla(s.nomer, s.imya), blob });
+        dobavitPrevyu(
+          s,
+          malenkaya,
+          mini,
+          raskl.imya.melko,
+          Y.zaPolem(raskl, S, izmerit),
+        );
+        dobavitList(s, bolshaya);
+      }
+
+      gotovo = { fajly, reestr: vydacha.reestr, kodKursa, data };
+      const ves = Y.vesZip(
+        fajly.map((f) => ({ imya: f.imya, razmer: f.blob.size })),
+      );
+      $("itogZagolovok").textContent =
+        "Готово: " +
+        vsego +
+        " " +
+        sklonenie(vsego, ["сертификат", "сертификата", "сертификатов"]);
+      $("progress").textContent =
+        "Архив: " +
+        vsego +
+        " " +
+        sklonenie(vsego, ["файл", "файла", "файлов"]) +
+        ", " +
+        megabajty(ves) +
+        ". Каждый лист — " +
+        shirina +
+        " × " +
+        vysota +
+        " точек: A4 при 300 точках на дюйм.";
+      $("skachatArhiv").textContent = "Скачать архив · " + megabajty(ves);
+      if (!reestrZagruzhen) {
+        $("preduprezhdenie").textContent =
+          "В реестре только эта пачка. Если сертификаты уже выдавали, загрузите " +
+          "текущий reestr.json в форме выше и сделайте пачку заново — иначе старые номера пропадут со страницы проверки.";
+        $("preduprezhdenie").hidden = false;
+      }
+      KNOPKI.forEach((id) => {
+        $(id).disabled = false;
+      });
+    }
+
+    function skachat(blob, imya) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = imya;
+      document.body.append(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+    }
+
+    for (const k of S.kursy) {
+      const o = document.createElement("option");
+      o.value = k.kod;
+      o.textContent = k.nazvanie;
+      $("kurs").append(o);
+    }
+    $("data").value = segodnya();
+    $("spisok").value = $("primer")
+      .textContent.split("\n")
+      .map((r) => r.trim())
+      .join("\n")
+      .trim();
+    obnovitSchet();
+
+    $("spisok").addEventListener("input", obnovitSchet);
+    $("kurs").addEventListener("change", obnovitNachalo);
+    $("data").addEventListener("change", obnovitNachalo);
+
+    $("fajlReestra").addEventListener("change", async () => {
+      const fajl = $("fajlReestra").files[0];
+      if (!fajl) return;
+      try {
+        const prochitannyj = Y.prochitatReestr(await fajl.text());
+        // Курсы шаблона, которых ещё нет в старом реестре, добавляются.
+        prochitannyj.kursy = Object.assign(
+          {},
+          Y.pustojReestr(S).kursy,
+          prochitannyj.kursy,
+        );
+        reestr = prochitannyj;
+        reestrZagruzhen = true;
+        const n = reestr.vydano.length;
+        $("reestrStatus").textContent =
+          "В реестре " +
+          n +
+          " " +
+          sklonenie(n, ["номер", "номера", "номеров"]) +
+          ". Нумерация продолжится после последнего по выбранному курсу и году.";
+        obnovitNachalo();
+      } catch (e) {
+        reestr = Y.pustojReestr(S);
+        reestrZagruzhen = false;
+        $("reestrStatus").textContent = e.message;
+      }
+    });
+
+    $("forma").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      $("oshibka").hidden = true;
+      const kodKursa = $("kurs").value;
+      const data = $("data").value;
+      let vydacha;
+      try {
+        if (!data) throw new Error("Укажите дату выдачи");
+        vydacha = Y.vydat({
+          imena: Y.razobratSpisok($("spisok").value).imena,
+          kodKursa,
+          data,
+          nachatS: Number($("nachatS").value),
+          reestr,
+        });
+      } catch (err) {
+        pokazatOshibku(err.message);
+        return;
+      }
+      $("sdelat").disabled = true;
+      try {
+        await sdelat(vydacha, kodKursa, data);
+      } catch (err) {
+        $("itog").hidden = true;
+        pokazatOshibku("Не получилось нарисовать сертификаты: " + err.message);
+      } finally {
+        $("sdelat").disabled = false;
+      }
+    });
+
+    $("skachatArhiv").addEventListener("click", async () => {
+      if (!gotovo) return;
+      const fajly = await Promise.all(
+        gotovo.fajly.map(async (f) => ({
+          imya: f.imya,
+          dannye: new Uint8Array(await f.blob.arrayBuffer()),
+        })),
+      );
+      skachat(
+        new Blob([Y.sobratZip(fajly)], { type: "application/zip" }),
+        "sertifikaty-" + gotovo.kodKursa + "-" + gotovo.data + ".zip",
+      );
+    });
+
+    $("skachatReestr").addEventListener("click", () => {
+      if (gotovo)
+        skachat(
+          new Blob([Y.reestrVTekst(gotovo.reestr)], {
+            type: "application/json",
+          }),
+          "reestr.json",
+        );
+    });
+
+    $("pechat").addEventListener("click", () => window.print());
+  })();
+</script>
   </body>
 </html>
